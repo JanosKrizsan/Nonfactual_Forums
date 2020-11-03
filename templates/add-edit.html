@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    {{ ('Edit' if data else 'Add new') + ' ' + type }}
+{% endblock %}
+
+{% block content %}
+    <div>
+        {% if data and data.question_id != none and type != 'question' %}
+            {% set parent = 'question' %}
+            {% set parent_id = data.question_id %}
+        {% elif data and data.answer_id != none %}
+            {% set parent = 'answer' %}
+            {% set parent_id = data.answer_id %}
+        {% endif %}
+        <h1>
+            {% if id %}
+                {% if parent and parent_id %}
+                    Edit {{ type }} #{{ id }} for {{ parent }} #{{ parent_id }}
+                {% else %}
+                    Edit {{ type }} #{{ id }}
+                {% endif %}
+            {% elif parent and parent_id %}
+                Add a new {{ type }} for {{ parent }} #{{ parent_id }}
+            {% else %}
+                Add a new {{ type }}
+            {% endif %}
+        </h1>
+        <form action="" method="post">
+            {% if parent_id %}
+                <input type="hidden" name="{{ parent +'_id' }}" value="{{ parent_id }}">
+            {% endif %}
+            {% if type == 'question' %}
+                <p>
+                    <span>
+                        <label for="title">Title:</label>
+                    </span>
+                    <span>
+                        {% set title = data.title if data and data.title else '' %}
+                        <input id='title' name="title" minlength="10" required value="{{ title }}">
+                    </span>
+                </p>
+            {% endif %}
+            <p>
+                <span>
+                    <label for="message">Enter the message:</label>
+                </span>
+                <span>
+                    {% set message = data.message if data and data.message else '' %}
+                    <textarea id='message' name="message" minlength="10" required>{{ message }}</textarea>
+                </span>
+            </p>
+            <p>
+            {% if type in ('question', 'answer') %}
+                <span>
+                    <label for="image">Enter image filename:</label>
+                </span>
+                <span>
+                    {% set url = data.image if data and data.image else '' %}
+                    <input type="text" id="image" name="image" class="url" value="{{ url }}">
+                </span>
+            {% elif data %}
+                <input type="hidden" name="edited_count" value="{{ data.edited_count }}">
+            {% endif %}
+            </p>
+            <p>
+                <span>
+                    {% set value = ('Edit' if id else 'Submit') + ' ' + type %}
+                    <input type="submit" value="{{ value }}">
+                </span>
+            </p>
+        </form>
+        {% include 'footer.html' %}
+    </div>
+{% endblock %}

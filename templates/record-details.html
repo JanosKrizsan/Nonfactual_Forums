@@ -1,0 +1,156 @@
+{% extends 'layout.html' %}
+
+{% macro display_table(table, type, main_type) %}
+    <table>
+        <tr>
+        {% for header in table[0] %}
+            <th>
+                {{ header.capitalize().replace('_', ' ') }}
+            </th>
+        {% endfor %}
+        </tr>
+        {% for row in table %}
+            <tr>
+                {% for key, value in row.items() %}
+                    {% if key == 'image' %}
+                        {% if value is none %}
+                            <td><p>No picture available</p></td>
+                        {% else %}
+                            {% set url = url_for('static', filename='images/' + value) %}
+                            <td><img src="{{ url }}" alt="{{ value }}"></td>
+                        {% endif %}
+                    {% elif key == 'submission_time' and type == 'answer' and 'answer' not in request.path %}
+                        <td>
+                            <a href="{{ url_for('route_answer_display', answer_id = row.id) }}">
+                                {{ value }}
+                            </a>
+                        </td>
+                    {% elif key == 'posted_by' %}
+                        <td>
+                            <a href="{{ url_for('route_user_page', name=value) }}">
+                                {{ value }}
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td class="no-border">
+                    {% set can_vote = 'name' in session and session.name != row.posted_by %}
+                    {% if type not in (main_type, 'comment') and can_vote %}
+                        {% for operation in ('up', 'down') %}
+                                {% set url = url_for(
+                                    'route_answer_votes',
+                                    answer_id=row.id,
+                                    operation=operation
+                                ) %}
+                            <form action="{{ url }}" method="post">
+                                <input type="submit" class="{{ operation }}" value="Vote {{ operation }}">
+                            </form>
+                        {% endfor %}
+                    {% endif %}
+                    {% if 'name' in session %}
+                        {% if session.role_id == 1 and type != 'comment' %}
+                            {% set operations = ['add', 'edit', 'delete'] %}
+                        {% elif session.role_id == 1 or session.name == row.posted_by %}
+                            {% set operations = ['edit', 'delete'] %}
+                        {% elif type != 'comment' %}
+                            {% set operations = ['add'] %}
+                        {% endif %}
+                    {% endif %}
+                    {% if not operations %}
+                        {% set operations = [] %}
+                    {% endif %}
+                    {% for to_do in operations %}
+                        {% if to_do == 'add' %}
+                            {% if type == 'question'  %}
+                                {% set url = url_for('route_%s_comment_to_question' % to_do, question_id=row.id) %}
+                            {% else %}
+                                {% set url = url_for('route_%s_comment_to_answer' % to_do, answer_id=row.id) %}
+                            {% endif %}
+                        {% elif type == 'question' %}
+                            {% set url = url_for('route_%s_question' % to_do, question_id=row.id) %}
+                        {% elif type == 'answer' %}
+                            {% set url = url_for('route_%s_answer' % to_do, answer_id=row.id) %}
+                        {% elif type == 'comment' %}
+                            {% set url = url_for('route_%s_comment' % to_do, comment_id=row.id) %}
+                        {% endif %}
+                            {% set value = to_do.capitalize() + (' comment' if to_do == 'add' else '') %}
+                            <form action="{{ url }}" method="post">
+                                <input type="submit" class="{{ to_do }}" value="{{ value }}">
+                            </form>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if type == 'question' %}
+            <tr>
+                {% set admin = 'role_id' in session and session.role_id == 1 %}
+                {% set has_tag = tag.name if tag and tag.name %}
+                <td colspan="{{ '3' if admin and has_tag else ('4' if 'name' in session else 8) }}">
+                    {{ tag.name if has_tag else 'No tag added yet' }}
+                </td>
+                {% if 'name' in session %}
+                    <td colspan="{{ '3' if admin and has_tag else '4' }}">
+                        <a href="{{ url_for('route_add_edit_tag', question_id=table[0].id) }}">
+                            Add/Edit tag
+                        </a>
+                    </td>
+                {% endif %}
+                {% if admin and has_tag %}
+                    <td colspan="2">
+                        <a href="{{ url_for('route_delete_tag', tag=tag.id, question_id=table[0].id) }}">
+                            Delete tag
+                        </a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endif %}
+    </table>
+{% endmacro %}
+
+{% block title %}
+    {{ 'Question details' if question or question_id else 'Answer details' }}
+{% endblock %}
+
+{% block content %}
+    <div>
+        {% set main_type = 'question' if question or question_id else 'answer' %}
+        {% if question %}
+            <h1>Question #{{ question.id }}</h1>
+            {{ display_table([question], 'question', main_type) }}
+        {% elif answer %}
+            <h1>Answer #{{ answer.id }}</h1>
+            {{ display_table([answer], 'answer', main_type) }}
+        {% else %}
+            <p>There is no question with id {{ question_id }}</p>
+        {% endif %}
+        {% if answers %}
+            <h2>Answers</h2>
+            {{ display_table(answers, 'answer', main_type) }}
+        {% elif question or question_id %}
+            <p>There are no answers for this question</p>
+        {% endif %}
+        {% if question or question_id %}
+        <p>
+            {% if 'name' in session %}
+                {% set id = question.id if question else question_id %}
+                <a href="{{ url_for('route_add_answer', question_id=id) }}">
+                    Add new answer
+                </a>
+            {% else %}
+                You need to log in to add an answer
+            {% endif %}
+        </p>
+        {% endif %}
+        {% if comments %}
+            <h3>Comments</h3>
+            {{ display_table(comments, 'comment') }}
+        {% else %}
+            <p>There are no comments for this {{ main_type }}</p>
+        {% endif %}
+        <p>
+            {% include 'footer.html' %}
+        </p>
+    </div>
+{% endblock %}

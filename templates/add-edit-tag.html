@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+{% if tag_id == None %}Add a new tag{% else %}Update tag{% endif %}
+{% endblock %}
+{% block content %}
+    <div>
+        <h1>{{ 'Add' if tag_id == None else 'Update' }} your tag</h1>
+        <form action="{{ url_for('route_add_edit_tag', question_id=question_id) }}" method="post">
+            <input type="hidden" name="question_id" value="{{ question_id }}">
+            <input type="hidden" name="tag_id" value="{{ tag_id.id }}">
+            <p>
+                <span>
+                    <label for="define_own">Define your own:</label>
+                </span>
+                <span>
+                    <input id="define_own" name="define_own">
+                </span>
+            </p>
+            <p>
+                <span>
+                    <label for="select">Or choose from a pre-existing one:</label>
+                </span>
+                <span>
+                    <select id="select" name="select">
+                        {% for tag in tags %}
+                            <option value="{{ tag }}">{{ tag.capitalize() }}</option>
+                        {%  endfor %}
+                    </select>
+                </span>
+            </p>
+            <p>
+                <span>
+                    {% set value = ('Add' if tag_id == None else 'Update') + ' tag' %}
+                    <input id="rag_button" type="submit" value="{{ value }}">
+                </span>
+            </p>
+        </form>
+        <p>
+            {% include 'footer.html' %}
+        </p>
+    </div>
+{% endblock %}

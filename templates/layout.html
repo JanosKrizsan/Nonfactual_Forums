@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>{% block title %}Welcome{% endblock %} | AskMate</title>
+</head>
+<body>
+    <div id="menu">
+        <form id="search-form" action="{{ url_for('route_search_results') }}" method="get">
+            <input id="search-bar" name="search_phrase" placeholder="looking for something?">
+            <input type="submit" value="Search">
+        </form>
+        {% if 'name' in session %}
+            <span class="login">You are logged in as
+                <a href="{{ url_for('route_user_page', name=session.name) }}">{{ session.name }}</a>
+                <a class="login" href="{{ url_for('logout') }}">Logout</a>
+            </span>
+        {% else %}
+            <a class="login" href="{{ url_for('route_login') }}">Login</a>
+            <a class="login" href="{{ url_for('route_register_user') }}">Register</a>
+        {% endif %}
+    </div>
+    <div>
+        <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+    </div>
+    {% block content %}{% endblock %}
+</body>
+</html>

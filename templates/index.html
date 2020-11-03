@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ 'Home' if request.path == '/' else 'Questions' }}{% endblock %}
+
+{% block content %}
+    {% set home = request.path == '/' %}
+    <div>
+        <h1>{{ 'Most recent' if home else 'All' }} questions</h1>
+        <table>
+            <tr>
+                {% set new_direction = 'desc' if current_dir else 'asc' %}
+                {% for key in questions[0] %}
+                    <th>
+                        {% if home %}
+                            {{ key.capitalize().replace('_', ' ') }}
+                        {% else %}
+                            {% set url = url_for(
+                                'route_all_questions_list',
+                                order_by=key,
+                                order_direction=new_direction
+                                ) %}
+                            <a href="{{ url }}">
+                                {{ key.capitalize().replace('_', ' ') }}
+                            </a>
+                        {% endif %}
+                    </th>
+                {% endfor %}
+            </tr>
+            {% for question in questions %}
+                <tr>
+                {% for key, value in question.items() %}
+                    {% if key == 'image' %}
+                        {% if value is none %}
+                            <td><p>No picture available</p></td>
+                        {% else %}
+                            {% set url = url_for('static', filename='images/' + value) %}
+                            <td><img src="{{ url }}" alt="{{ value }}"></td>
+                        {% endif %}
+                    {% elif key == 'submission_time' %}
+                        <td>
+                            <a href="{{ url_for('route_question_display', question_id = question.id) }}">
+                                {{ value }}
+                            </a>
+                        </td>
+                    {% elif key == 'posted_by' %}
+                        <td>
+                            <a href="{{ url_for('route_user_page', name=value) }}">
+                                {{ value }}
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+                {% if 'name' in session and (session.name != question.posted_by or session.role_id == 1) %}
+                    <td class="no-border">
+                        {% for operation in ['up', 'down'] %}
+                                {% set url = url_for(
+                                    'route_question_votes',
+                                    question_id = question.id,
+                                    operation = operation
+                                ) %}
+                                <form action="{{ url }}" method="post">
+                                    <input type="submit" class="{{ operation }}" value="Vote {{ operation }}">
+                                </form>
+                        {% endfor %}
+                    </td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+        <p>
+            {% if 'name' in session %}
+                <a href="{{ url_for('route_question_add') }}">Ask a question</a>
+            {% else %}
+                You need to log in to ask a question
+            {% endif %}
+        </p>
+        {% if home %}
+            <p>
+                <a href="{{ url_for('route_all_questions_list') }}">Display all questions</a>
+            </p>
+            <p>
+                <a href="{{ url_for('route_list_all_tags') }}">List all tags and their questions</a>
+            </p>
+        {% endif %}
+        {% if not home %}
+            {% include 'footer.html' %}
+        {% endif %}
+    </div>
+{% endblock %}

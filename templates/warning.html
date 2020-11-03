@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Warning!{% endblock %}
+
+{% block content %}
+    <div>
+        <p>
+        {% if message %}
+            {{ message }}
+        {% endif %}
+        </p>
+        {% include 'footer.html' %}
+    </div>
+{% endblock %}

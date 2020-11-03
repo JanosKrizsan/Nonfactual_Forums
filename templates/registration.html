@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    {{ 'Registration' if type == 'registration' else 'Login' }}
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>{{ 'Registration' if type == 'registration' else 'Login' }}</h1>
+        {% if type == 'registration' %}
+            {% set url = url_for('route_register_user') %}
+        {% else %}
+            {% set url = url_for('route_login') %}
+        {% endif %}
+        <form action="{{ url }}" method="post">
+            <p>
+                <span><label for="name">Username</label></span>
+                <span><input name="name" id="name"></span>
+            </p>
+            <p>
+                <span><label for="password">Password</label></span>
+                <span><input type="password" name="password" id="password"></span>
+            </p>
+            <p>
+                {% set value = 'Create user' if type == 'registration' else 'Login'  %}
+                <input type="submit" value="{{ value }}">
+            </p>
+        </form>
+        {% if warning_message %}
+            <span class="warning">{{ warning_message }}</span>
+        {% endif %}
+        <p>
+            {% include 'footer.html' %}
+        </p>
+    </div>
+{% endblock %}

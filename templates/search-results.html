@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block title %}Search results{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Results for {{ search_phrase }}:</h1>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Message</th>
+            </tr>
+            {% for data in data_found %}
+                <tr>
+                    <td>{{ data['title'] }}</td>
+                    <td>{{ data['message'] }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p>
+            {% include 'footer.html' %}
+        </p>
+    </div>
+{% endblock %}

@@ -1,0 +1,171 @@
+div {
+    margin: 20px;
+}
+
+p span {
+    display: block;
+}
+
+table {
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-collapse: collapse;
+    margin: auto;
+    width: 100%;
+}
+
+tr:nth-child(even) {
+    background-color: bisque;
+}
+
+tr.tagged-question {
+    background-color: bisque;
+}
+
+th {
+    background-color: burlywood;
+    border: 3px solid black;
+    white-space: nowrap;
+    padding: 10px;
+}
+
+td {
+    border: 1px solid black;
+    text-align: center;
+    padding: 10px;
+}
+
+td.no-border {
+    background-color: white;
+    border: none;
+}
+
+input[type=submit] {
+    white-space: nowrap;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover, a:visited, a:link, a:active {
+    color: black;
+    text-decoration: underline;
+
+}
+
+.up, .down, .edit, .delete, .add {
+    color: white;
+    width: 100px;
+    margin: 10px;
+}
+
+.up {
+    background-color: rgba(97, 128, 33, 0.8);
+}
+
+.up:hover {
+    background-color: #00b000;
+}
+
+.down {
+    background-color: rgba(180, 0, 0, 0.71);
+}
+
+.down:hover {
+    background-color: #ff6147;
+}
+
+.edit {
+    background-color: #ffc500
+}
+
+.edit:hover {
+    background-color: orange;
+}
+
+.delete {
+    background-color: #6a5acd;
+}
+
+.delete:hover {
+    background-color: indigo;
+}
+
+.add {
+    background-color: #6e90ff;
+}
+
+.add:hover {
+    background-color: dodgerblue;
+}
+
+input[type=submit].active {
+    transform: translateY(4px);
+}
+
+textarea {
+  width: 300px;
+  height: 150px;
+}
+
+.url {
+   width: 300px;
+}
+
+label {
+    font-weight: bold;
+}
+
+img {
+    width: 120px;
+    height: 90px;
+    transition: transform .2s;
+    margin: 0 auto;
+}
+
+img:hover {
+    transform: scale(5);
+}
+
+#logo {
+    transform: none;
+}
+
+#search-form {
+    display: inline-block;
+}
+
+#search-bar {
+    width: 350px;
+}
+
+#user_title {
+    display: block;
+    alignment: center;
+}
+
+#u_details , #u_options {
+    display: inline-block;
+    align-content: center;
+    margin: 200px;
+    position: relative;
+}
+
+#u_details {
+
+}
+
+#u_options {
+
+}
+
+.login {
+    float: right;
+    margin-left: 15px;
+}
+
+.warning {
+    color: red;
+    font-weight: bold;
+}
