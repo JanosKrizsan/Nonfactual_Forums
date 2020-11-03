@@ -8,7 +8,7 @@ It is a lightweight, non-JavaScript forum with features akin to any regular foru
 
 ## Tech Used
 
-- Python with Flask
+- Python with Flask & Jinja
 - HTML & CSS
 - PostgreSQL
 
